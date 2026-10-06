@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bùi Ánh Quyên — Trang giới thiệu bản thân</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
+<style>
+:root{
+  box-sizing:border-box;
+  --bg:#ffffff; --bg-soft:#fff4f5; --card:#ffffff; --border:#f0d8db;
+  --red:#c11f36; --red-dark:#8c1327; --ink:#211414; --muted:#7a6564;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="dark"]{
+  --bg:#1c1112; --bg-soft:#241618; --card:#241618; --border:#3d2528;
+  --red:#e2445c; --red-dark:#ff6b80; --ink:#f4e9e9; --muted:#c6adac;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth; scroll-padding-top:70px; height:100%;}
+body{
+  font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%; display:block;}
+a{color:inherit; text-decoration:none;}
+.wrap{max-width:1040px; margin:0 auto; padding:0 24px;}
+h1,h2,h3{font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; font-weight:700; letter-spacing:-.01em;}
+.sans{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;}
+
+/* header */
+header{
+  position:sticky; top:0; z-index:50; background:var(--bg);
+  border-bottom:1px solid var(--border); padding-top:env(safe-area-inset-top,0px);
+}
+.nav-row{display:flex; align-items:center; justify-content:space-between; height:64px;}
+.brand{font-size:1.3rem; font-weight:700; color:var(--red);}
+nav ul{list-style:none; display:flex; gap:28px;}
+nav a{font-family:-apple-system,'Segoe UI',Roboto,sans-serif; font-size:.95rem; color:var(--ink); padding:6px 2px; border-bottom:2px solid transparent; transition:border-color .2s, color .2s;}
+nav a:hover{color:var(--red); border-color:var(--red);}
+.nav-actions{display:flex; align-items:center; gap:14px;}
+#themeBtn{
+  border:1px solid var(--border); background:var(--bg-soft); color:var(--ink);
+  width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:1.05rem;
+  display:flex; align-items:center; justify-content:center; transition:transform .2s;
+}
+#themeBtn:hover{transform:scale(1.08);}
+#hamburger{display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px;}
+#hamburger span{width:24px; height:2px; background:var(--ink); display:block; transition:.25s;}
+#navList{transition:max-height .3s ease;}
+
+/* hero/about */
+.hero{background:var(--bg-soft); padding:64px 0 60px; border-bottom:1px solid var(--border);}
+.hero-grid{display:grid; grid-template-columns:220px 1fr; gap:48px; align-items:center;}
+.avatar-wrap{position:relative; width:200px; height:200px; margin:0 auto;}
+#avatarImg{
+  width:200px; height:200px; border-radius:50%; object-fit:cover;
+  border:4px solid var(--red); cursor:pointer; transition:opacity .2s;
+}
+.avatar-wrap:hover #avatarImg{opacity:.85;}
+.avatar-hint{
+  position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+  background:var(--red); color:#fff; font-family:-apple-system,sans-serif;
+  font-size:.68rem; padding:3px 10px; border-radius:20px; pointer-events:none;
+  white-space:nowrap;
+}
+.hero h1{font-size:2.6rem; color:var(--red-dark); margin-bottom:6px;}
+.hero .role{font-family:-apple-system,sans-serif; color:var(--muted); font-size:1.05rem; margin-bottom:18px;}
+.facts{list-style:none; font-family:-apple-system,sans-serif; font-size:.92rem; color:var(--ink); margin-bottom:18px;}
+.facts li{padding:3px 0; border-left:3px solid var(--red); padding-left:10px; margin-bottom:6px;}
+.bio{max-width:62ch; color:var(--ink);}
+
+/* sections */
+section{padding:64px 0;}
+.section-title{font-size:1.7rem; color:var(--red-dark); margin-bottom:8px;}
+.section-sub{font-family:-apple-system,sans-serif; color:var(--muted); margin-bottom:32px; font-size:.95rem;}
+.reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;}
+.reveal.visible{opacity:1; transform:none;}
+
+/* skills */
+.skills-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+.skill-card{
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:20px; transition:transform .2s, box-shadow .2s;
+}
+.skill-card:hover{transform:translateY(-4px); box-shadow:0 10px 24px rgba(193,31,54,.12);}
+.skill-card h3{font-size:1.02rem; color:var(--red); margin-bottom:6px;}
+.skill-card p{font-family:-apple-system,sans-serif; font-size:.87rem; color:var(--muted);}
+
+/* projects */
+.filter-row{display:flex; gap:10px; margin-bottom:26px; flex-wrap:wrap;}
+#projSearch{
+  flex:1; min-width:200px; font-family:-apple-system,sans-serif; font-size:.92rem;
+  padding:10px 14px; border:1px solid var(--border); border-radius:8px;
+  background:var(--bg-soft); color:var(--ink);
+}
+.tag-btn{
+  font-family:-apple-system,sans-serif; font-size:.82rem; padding:8px 14px;
+  border:1px solid var(--border); background:var(--bg-soft); color:var(--ink);
+  border-radius:20px; cursor:pointer; transition:.2s;
+}
+.tag-btn.active, .tag-btn:hover{background:var(--red); color:#fff; border-color:var(--red);}
+.proj-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
+.proj-card{
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:22px; transition:transform .2s, box-shadow .2s;
+}
+.proj-card:hover{transform:translateY(-4px); box-shadow:0 10px 24px rgba(193,31,54,.12);}
+.proj-card h3{font-size:1.05rem; margin-bottom:8px;}
+.proj-card p{font-family:-apple-system,sans-serif; font-size:.88rem; color:var(--muted); margin-bottom:12px;}
+.proj-tag{
+  display:inline-block; font-family:-apple-system,sans-serif; font-size:.72rem;
+  background:var(--bg-soft); color:var(--red); border:1px solid var(--border);
+  padding:3px 10px; border-radius:20px;
+}
+.no-result{font-family:-apple-system,sans-serif; color:var(--muted); display:none;}
+
+/* hobbies */
+.hobby-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+.hobby-card{
+  text-align:center; background:var(--bg-soft); border:1px solid var(--border);
+  border-radius:10px; padding:24px 12px; transition:transform .2s;
+}
+.hobby-card:hover{transform:translateY(-4px);}
+.hobby-card .ico{font-size:1.8rem; margin-bottom:8px;}
+.hobby-card p{font-family:-apple-system,sans-serif; font-size:.85rem; color:var(--ink);}
+
+/* contact */
+.contact-wrap{display:grid; grid-template-columns:1.2fr 1fr; gap:40px;}
+.contact-note{font-family:-apple-system,sans-serif; color:var(--muted); margin-bottom:20px; font-size:.95rem;}
+.field{margin-bottom:16px;}
+.field label{display:block; font-family:-apple-system,sans-serif; font-size:.85rem; margin-bottom:6px; color:var(--ink);}
+.field input, .field textarea{
+  width:100%; font-family:-apple-system,sans-serif; font-size:.92rem;
+  padding:10px 12px; border:1px solid var(--border); border-radius:8px;
+  background:var(--bg-soft); color:var(--ink);
+}
+.field input:focus, .field textarea:focus{outline:2px solid var(--red); outline-offset:1px;}
+.err{color:var(--red); font-family:-apple-system,sans-serif; font-size:.78rem; min-height:16px; display:block; margin-top:4px;}
+.charcount{font-family:-apple-system,sans-serif; font-size:.75rem; color:var(--muted); text-align:right;}
+#submitBtn{
+  background:var(--red); color:#fff; border:none; padding:12px 26px; border-radius:8px;
+  font-family:-apple-system,sans-serif; font-size:.95rem; cursor:pointer; transition:background .2s;
+}
+#submitBtn:hover{background:var(--red-dark);}
+#formStatus{font-family:-apple-system,sans-serif; font-size:.88rem; margin-top:12px; color:var(--red);}
+#toast{
+  position:fixed; left:50%; bottom:28px; transform:translate(-50%,20px);
+  background:var(--red); color:#fff; font-family:-apple-system,sans-serif; font-size:.92rem;
+  padding:14px 22px; border-radius:10px; box-shadow:0 12px 30px rgba(0,0,0,.22);
+  display:flex; align-items:center; gap:10px; opacity:0; pointer-events:none;
+  transition:opacity .3s ease, transform .3s ease; z-index:100; max-width:90vw;
+}
+#toast.show{opacity:1; transform:translate(-50%,0);}
+#toast .tick{font-size:1.1rem;}
+.contact-info{background:var(--bg-soft); border:1px solid var(--border); border-radius:10px; padding:24px;}
+.contact-info h3{color:var(--red); font-size:1.05rem; margin-bottom:14px;}
+.contact-info p{font-family:-apple-system,sans-serif; font-size:.9rem; margin-bottom:8px; color:var(--ink);}
+
+footer{
+  border-top:1px solid var(--border); padding:26px 0; text-align:center;
+  font-family:-apple-system,sans-serif; font-size:.85rem; color:var(--muted);
+  padding-bottom:calc(26px + env(safe-area-inset-bottom,0px));
+}
+
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr; text-align:center;}
+  .avatar-wrap{margin:0 auto 12px;}
+  .facts{display:inline-block; text-align:left;}
+  .skills-grid{grid-template-columns:repeat(2,1fr);}
+  .proj-grid{grid-template-columns:1fr;}
+  .hobby-grid{grid-template-columns:repeat(2,1fr);}
+  .contact-wrap{grid-template-columns:1fr;}
+  nav ul{display:none;}
+  #hamburger{display:flex;}
+  header[data-open="true"] nav ul{
+    display:flex; flex-direction:column; position:absolute; left:0; right:0; top:64px;
+    background:var(--bg); border-bottom:1px solid var(--border); padding:14px 24px; gap:14px;
+  }
+}
+@media (max-width:520px){
+  .hero h1{font-size:2rem;}
+  .skills-grid{grid-template-columns:1fr;}
+  .hobby-grid{grid-template-columns:1fr 1fr;}
+  .wrap{padding:0 16px;}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+// Toàn bộ dữ liệu CV nằm trong các mảng/đối tượng này và được truyền xuống component qua props.
+const navItems = [
+  { id: 'about', label: 'Bản thân' },
+  { id: 'skills', label: 'Kĩ năng' },
+  { id: 'projects', label: 'Dự án' },
+  { id: 'hobbies', label: 'Sở thích' },
+  { id: 'contact', label: 'Liên hệ với tôi' },
+];
+
+const defaultAvatar =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23fff4f5'/%3E%3Ccircle cx='100' cy='78' r='38' fill='%23c11f36'/%3E%3Cellipse cx='100' cy='190' rx='62' ry='55' fill='%23c11f36'/%3E%3C/svg%3E";
+
+const profile = {
+  name: 'Bùi Ánh Quyên',
+  role: 'Bùi Ánh Quyên — Sinh viên năm hai ngành AIoT, Học viện Công nghệ Bưu chính Viễn thông',
+  facts: [
+    'Sinh ngày 31/10/2007',
+    'Quê quán: Đông Anh, Hà Nội',
+    'Sinh viên năm hai ngành AIoT — Học viện Công nghệ Bưu chính Viễn thông',
+    'GPA năm nhất: 3.35/4.0',
+  ],
+  bio: 'Là một sinh viên năm 2 mang trong mình tình yêu mãnh liệt với công nghệ thông minh, tôi luôn bị cuốn hút bởi khả năng biến những ý tưởng trên bản vẽ thành các giải pháp kết nối thực tế. Đam mê lớn nhất của tôi là khám phá cách công nghệ có thể thổi hồn vào vật thể, giúp tối ưu hóa cuộc sống và giải quyết các bài toán của con người. Mong ước của tôi là được rèn luyện trong một môi trường thực tế chuyên nghiệp, nơi tôi có thể theo đuổi đam mê sáng tạo, biến sự tò mò thành động lực cống hiến và từng bước trưởng thành trên con đường phát triển sản phẩm thông minh.',
+};
+
+const skills = [
+  { title: 'IELTS 6.0', desc: 'Tiếng Anh giao tiếp và học thuật ở mức khá.' },
+  { title: 'Lập trình', desc: 'Kiến thức cơ bản về Python, C và Machine Learning.' },
+  { title: 'Làm việc nhóm', desc: 'Phối hợp tốt trong các dự án và bài tập nhóm.' },
+  { title: 'Tin học văn phòng', desc: 'Thành thạo Word, Excel.' },
+  { title: 'Thái độ làm việc', desc: 'Chăm chỉ, năng nổ, cẩn thận.' },
+  { title: 'Tinh thần học hỏi', desc: 'Luôn chủ động tìm tòi kiến thức mới.' },
+];
+
+const projects = [
+  {
+    title: 'Web hỗ trợ ghi chép cuộc họp online',
+    desc: 'Trang web giúp sinh viên và nhân viên văn phòng tự động ghi chép, tóm tắt nội dung các cuộc họp trực tuyến.',
+    label: 'Web · AI',
+    tags: 'web ai note ghi chép',
+  },
+  {
+    title: 'Web giới thiệu bản thân',
+    desc: 'Trang cá nhân giới thiệu thông tin, kĩ năng và dự án — chính là trang bạn đang xem!',
+    label: 'Web',
+    tags: 'web portfolio giới thiệu bản thân',
+  },
+  {
+    title: 'Web tuyển sinh ngành học',
+    desc: 'Trang giới thiệu và tuyển sinh cho ngành học, cung cấp thông tin chương trình đào tạo cho tân sinh viên.',
+    label: 'Web',
+    tags: 'web tuyển sinh ngành học',
+  },
+  {
+    title: 'Trò chơi Rắn săn mồi & Cờ vua',
+    desc: 'Xây dựng hai trò chơi kinh điển: rắn săn mồi và cờ vua, rèn luyện tư duy logic khi lập trình.',
+    label: 'Game',
+    tags: 'game rắn cờ vua',
+  },
+];
+
+const projectFilters = [
+  { tag: 'all', label: 'Tất cả' },
+  { tag: 'web', label: 'Web' },
+  { tag: 'ai', label: 'AI' },
+  { tag: 'game', label: 'Game' },
+];
+
+const hobbies = [
+  { icon: '🎬', text: 'Xem phim hành động' },
+  { icon: '📚', text: 'Đọc sách trinh thám & công nghệ' },
+  { icon: '🍳', text: 'Nấu ăn' },
+  { icon: '🏊', text: 'Đi bơi' },
+];
+
+const contactInfo = [
+  '👤 Bùi Ánh Quyên',
+  '📞 0358 058 958',
+  '🎓 Học viện Công nghệ Bưu chính Viễn thông',
+  '📍 Đông Anh, Hà Nội',
+];
+
+
+// Hook hiệu ứng hiện dần khi cuộn tới phần tử (thay cho IntersectionObserver trong script.js cũ)
+function useReveal() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('visible');
+          io.unobserve(el);
+        }
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return ref;
+}
+
+
+// Component bọc dùng children: tiêu đề + mô tả + nội dung bên trong
+function Section({ id, title, subtitle, subClass = 'section-sub', style, children }) {
+  const titleRef = useReveal();
+  const subRef = useReveal();
+  return (
+    <section id={id} style={style}>
+      <div className="wrap">
+        <h2 className="section-title reveal" ref={titleRef}>{title}</h2>
+        {subtitle && <p className={`${subClass} reveal`} ref={subRef}>{subtitle}</p>}
+        {children}
+      </div>
+    </section>
+  );
+}
+
+
+function Header({ items, theme, onToggleTheme }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <header id="siteHeader" data-open={open}>
+      <div className="wrap nav-row">
+        <div className="brand">Quyên</div>
+        <nav>
+          <ul id="navList">
+            {items.map((it) => (
+              <li key={it.id}>
+                <a href={`#${it.id}`} className="nav-link" onClick={() => setOpen(false)}>{it.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="nav-actions">
+          <button id="themeBtn" aria-label="Đổi giao diện sáng/tối" onClick={onToggleTheme}>
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+          <button id="hamburger" aria-label="Mở menu" onClick={() => setOpen(!open)}>
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+
+function Hero({ profile, defaultAvatar }) {
+  const inputRef = useRef(null);
+  const [avatar, setAvatar] = useState(() => {
+    try { return localStorage.getItem('quyen-avatar') || defaultAvatar; } catch (e) { return defaultAvatar; }
+  });
+
+  const handleFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setAvatar(ev.target.result);
+      try { localStorage.setItem('quyen-avatar', ev.target.result); } catch (err) {}
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <section className="hero" id="about">
+      <div className="wrap hero-grid">
+        <div className="avatar-wrap">
+          <img id="avatarImg" src={avatar} alt={`Ảnh đại diện ${profile.name}`} onClick={() => inputRef.current.click()} />
+          <span className="avatar-hint">Nhấn để đổi ảnh</span>
+          <input type="file" accept="image/*" style={{ display: 'none' }} ref={inputRef} onChange={handleFile} />
+        </div>
+        <div>
+          <h1>Xin chào, mình là Quyên!</h1>
+          <p className="role sans">{profile.role}</p>
+          <ul className="facts">
+            {profile.facts.map((f) => <li key={f}>{f}</li>)}
+          </ul>
+          <p className="bio">{profile.bio}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+function SkillCard({ title, desc }) {
+  const ref = useReveal();
+  return (
+    <div className="skill-card reveal" ref={ref}>
+      <h3>{title}</h3>
+      <p>{desc}</p>
+    </div>
+  );
+}
+
+
+function ProjectCard({ title, desc, label }) {
+  const ref = useReveal();
+  return (
+    <div className="proj-card reveal" ref={ref}>
+      <h3>{title}</h3>
+      <p>{desc}</p>
+      <span className="proj-tag">{label}</span>
+    </div>
+  );
+}
+
+function Projects({ projects, filters }) {
+  const [query, setQuery] = useState('');
+  const [activeTag, setActiveTag] = useState('all');
+
+  const q = query.trim().toLowerCase();
+  const visible = projects.filter((p) => {
+    const text = `${p.title} ${p.desc} ${p.label} ${p.tags}`.toLowerCase();
+    const matchesTag = activeTag === 'all' || p.tags.includes(activeTag);
+    return matchesTag && (q === '' || text.includes(q));
+  });
+
+  return (
+    <>
+      <div className="filter-row">
+        <input
+          type="text"
+          id="projSearch"
+          placeholder="Tìm dự án theo từ khóa hoặc tag..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        {filters.map((f) => (
+          <button
+            key={f.tag}
+            className={`tag-btn${activeTag === f.tag ? ' active' : ''}`}
+            onClick={() => setActiveTag(f.tag)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+      <div className="proj-grid">
+        {visible.map((p) => <ProjectCard key={p.title} {...p} />)}
+      </div>
+      {visible.length === 0 && <p className="no-result" style={{ display: 'block' }}>Không tìm thấy dự án phù hợp.</p>}
+    </>
+  );
+}
+
+
+function HobbyCard({ icon, text }) {
+  const ref = useReveal();
+  return (
+    <div className="hobby-card reveal" ref={ref}>
+      <div className="ico">{icon}</div>
+      <p>{text}</p>
+    </div>
+  );
+}
+
+function Hobbies({ hobbies }) {
+  return (
+    <div className="hobby-grid">
+      {hobbies.map((h) => <HobbyCard key={h.text} {...h} />)}
+    </div>
+  );
+}
+
+
+const empty = { fullname: '', phone: '', email: '', message: '' };
+
+function Contact({ info }) {
+  const [values, setValues] = useState(empty);
+  const [errors, setErrors] = useState({});
+  const [toast, setToast] = useState({ show: false, text: '' });
+  const timer = useRef(null);
+  const formRef = useReveal();
+  const infoRef = useReveal();
+
+  const onChange = (e) => setValues({ ...values, [e.target.name]: e.target.value });
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const fullname = values.fullname.trim();
+    const errs = {};
+    if (fullname.length < 2) errs.fullname = 'Vui lòng nhập họ và tên hợp lệ.';
+    if (!/^0\d{9}$/.test(values.phone.trim())) errs.phone = 'Số điện thoại phải gồm 10 số, bắt đầu bằng 0.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) errs.email = 'Email không đúng định dạng.';
+    if (values.message.trim().length < 5) errs.message = 'Lời nhắn cần ít nhất 5 kí tự.';
+    setErrors(errs);
+
+    if (Object.keys(errs).length === 0) {
+      setToast({ show: true, text: `Đã gửi tin nhắn thành công! Cảm ơn ${fullname}, mình sẽ phản hồi sớm nhất có thể.` });
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => setToast((t) => ({ ...t, show: false })), 4000);
+      setValues(empty);
+    }
+  };
+
+  return (
+    <div className="contact-wrap">
+      <form id="contactForm" className="reveal" ref={formRef} noValidate onSubmit={onSubmit}>
+        <div className="field">
+          <label htmlFor="fullname">Họ và tên</label>
+          <input type="text" id="fullname" name="fullname" value={values.fullname} onChange={onChange} />
+          <span className="err">{errors.fullname}</span>
+        </div>
+        <div className="field">
+          <label htmlFor="phone">Số điện thoại</label>
+          <input type="text" id="phone" name="phone" value={values.phone} onChange={onChange} />
+          <span className="err">{errors.phone}</span>
+        </div>
+        <div className="field">
+          <label htmlFor="email">Email</label>
+          <input type="text" id="email" name="email" value={values.email} onChange={onChange} />
+          <span className="err">{errors.email}</span>
+        </div>
+        <div className="field">
+          <label htmlFor="message">Lời nhắn</label>
+          <textarea id="message" name="message" rows="4" maxLength="300" value={values.message} onChange={onChange} />
+          <div className="charcount">{values.message.length}/300</div>
+          <span className="err">{errors.message}</span>
+        </div>
+        <button type="submit" id="submitBtn">Gửi lời nhắn</button>
+        <p id="formStatus"></p>
+      </form>
+
+      <div id="toast" className={toast.show ? 'show' : ''}>
+        <span className="tick">✅</span><span>{toast.text}</span>
+      </div>
+
+      <div className="contact-info reveal" ref={infoRef}>
+        <h3>Thông tin liên hệ</h3>
+        {info.map((line) => <p key={line}>{line}</p>)}
+      </div>
+    </div>
+  );
+}
+
+function Footer({ name }) {
+  return (
+    <footer>
+      <p>© {new Date().getFullYear()} {name}. Được tạo với ❤ bởi chính mình.</p>
+    </footer>
+  );
+}
+
+
+const softBg = { background: 'var(--bg-soft)', borderTop: '1px solid var(--border)' };
+
+function App() {
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('quyen-theme') || 'light'; } catch (e) { return 'light'; }
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') root.setAttribute('data-theme', 'dark');
+    else root.removeAttribute('data-theme');
+    try { localStorage.setItem('quyen-theme', theme); } catch (e) {}
+  }, [theme]);
+
+  return (
+    <>
+      <Header items={navItems} theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+      <Hero profile={profile} defaultAvatar={defaultAvatar} />
+
+      <Section id="skills" title="Kĩ năng" subtitle="Những gì mình đã và đang rèn luyện">
+        <div className="skills-grid">
+          {skills.map((s) => <SkillCard key={s.title} title={s.title} desc={s.desc} />)}
+        </div>
+      </Section>
+
+      <Section
+        id="projects"
+        title="Dự án"
+        subtitle="Một vài sản phẩm mình đã thực hiện — gõ từ khóa hoặc chọn thẻ để lọc"
+        style={{ ...softBg, borderBottom: '1px solid var(--border)' }}
+      >
+        <Projects projects={projects} filters={projectFilters} />
+      </Section>
+
+      <Section id="hobbies" title="Sở thích" subtitle="Những điều mình yêu thích ngoài giờ học">
+        <Hobbies hobbies={hobbies} />
+      </Section>
+
+      <Section
+        id="contact"
+        title="Liên hệ với tôi"
+        subtitle="Để lại lời nhắn, mình sẽ phản hồi sớm nhất có thể!"
+        subClass="contact-note"
+        style={softBg}
+      >
+        <Contact info={contactInfo} />
+      </Section>
+
+      <Footer name={profile.name} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

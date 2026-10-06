@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Virtual Calculator</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* ===================== 1. CSS ===================== */
+const css = `
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e6e9e5; font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
+  .page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .calculator {
+    width: 320px; padding: 18px; border-radius: 22px;
+    background: #1f2a30; box-shadow: 0 18px 40px rgba(31, 42, 48, 0.35);
+  }
+  .display {
+    height: 108px; margin-bottom: 16px; padding: 12px 16px; border-radius: 12px;
+    background: #c9d8c5; color: #1f2a30; text-align: right;
+    display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.25);
+    font-variant-numeric: tabular-nums;
+  }
+  .display-history { min-height: 20px; font-size: 15px; opacity: 0.6; word-break: break-all; }
+  .display-value { font-size: 38px; font-weight: 700; word-break: break-all; line-height: 1.1; }
+  .display-value.small { font-size: 24px; }
+  .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .key {
+    height: 58px; border: none; border-radius: 12px; font-size: 22px; font-weight: 600;
+    cursor: pointer; font-family: inherit; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.06s, box-shadow 0.06s, filter 0.15s;
+  }
+  .key:hover { filter: brightness(1.08); }
+  .key:active { transform: translateY(3px); box-shadow: 0 0 0 rgba(0, 0, 0, 0.3); }
+  .key:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+`;
+
+/* ===================== 2. HÀM TÍNH TOÁN ===================== */
+// Bộ tính toán tự viết (không dùng eval) – hỗ trợ + - * / và số âm đứng đầu.
+function evaluate(expression) {
+  const tokens = expression.match(/\d+\.?\d*|\.\d+|[+\-*/]/g) || [];
+  let pos = 0;
+
+  // factor = ['-'] số
+  const factor = () => {
+    const t = tokens[pos++];
+    if (t === "-") return -factor();
+    if (t === undefined || /[+*/]/.test(t)) throw new Error("Biểu thức sai");
+    return parseFloat(t);
+  };
+  // term = factor (('*' | '/') factor)*
+  const term = () => {
+    let value = factor();
+    while (tokens[pos] === "*" || tokens[pos] === "/") {
+      const op = tokens[pos++];
+      const right = factor();
+      if (op === "/" && right === 0) throw new Error("Chia cho 0");
+      value = op === "*" ? value * right : value / right;
+    }
+    return value;
+  };
+  // expr = term (('+' | '-') term)*
+  let result = term();
+  while (tokens[pos] === "+" || tokens[pos] === "-") {
+    const op = tokens[pos++];
+    const right = term();
+    result = op === "+" ? result + right : result - right;
+  }
+  return parseFloat(result.toFixed(10)); // tránh lỗi 0.1 + 0.2
+}
+
+/* ===================== 3. COMPONENT CON ===================== */
+// Display: hiển thị biểu thức (dòng nhỏ) và kết quả/biểu thức hiện tại (dòng lớn)
+function Display({ value, history }) {
+  const pretty = (s) => s.replace(/\*/g, "×").replace(/\//g, "÷");
+  const text = value === "" ? "0" : pretty(value);
+  return (
+    <div className="display">
+      <div className="display-history">{history ? pretty(history) + " =" : ""}</div>
+      <div className={"display-value" + (text.length > 11 ? " small" : "")}>{text}</div>
+    </div>
+  );
+}
+
+// Button: nhận label, color (màu chữ), bgColor (màu nền), onClick
+// span: số cột chiếm (tuỳ chọn), tall: chiếm 2 hàng (tuỳ chọn)
+function Button({ label, color, bgColor, onClick, span = 1, tall = false }) {
+  return (
+    <button
+      className="key"
+      style={{
+        color,
+        background: bgColor,
+        gridColumn: span > 1 ? `span ${span}` : undefined,
+        gridRow: tall ? "span 2" : undefined,
+        height: tall ? "auto" : undefined,
+      }}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
+
+/* ===================== 4. BẢNG MÀU ===================== */
+const THEME = {
+  number: { color: "#1f2a30", bgColor: "#f1f3ef" }, // nút số
+  operator: { color: "#1f2a30", bgColor: "#e8a33d" }, // + - × ÷
+  action: { color: "#ffffff", bgColor: "#d64550" }, // C, DEL
+  equals: { color: "#ffffff", bgColor: "#2f8f83" }, // =
+};
+
+/* ===================== 5. APP CHÍNH ===================== */
+function App() {
+  const [expression, setExpression] = useState(""); // chuỗi biểu thức hiện tại
+  const [history, setHistory] = useState(""); // biểu thức vừa tính xong
+  const [done, setDone] = useState(false); // true khi vừa bấm "=" (hoặc báo lỗi)
+
+  const isOperator = (ch) => "+-*/".includes(ch);
+
+  // Nhập số hoặc dấu thập phân
+  const inputDigit = (d) => {
+    if (done) {
+      setExpression(d === "." ? "0." : d);
+      setHistory("");
+      setDone(false);
+      return;
+    }
+    const lastNumber = expression.split(/[+\-*/]/).pop();
+    if (d === "." && lastNumber.includes(".")) return; // mỗi số chỉ 1 dấu "."
+    if (d === "." && (expression === "" || isOperator(expression.slice(-1)))) {
+      setExpression(expression + "0."); // ".5" -> "0.5"
+      return;
+    }
+    setExpression(expression + d);
+  };
+
+  // Nhập phép tính
+  const inputOperator = (op) => {
+    const base = done && history === "" ? "" : expression; // sau khi lỗi thì bắt đầu lại
+    setDone(false);
+    setHistory("");
+    if (base === "") {
+      if (op === "-") setExpression("-"); // cho phép số âm ở đầu
+      return;
+    }
+    if (isOperator(base.slice(-1))) {
+      if (base === "-") return;
+      setExpression(base.slice(0, -1) + op); // đổi phép tính vừa nhập
+    } else {
+      setExpression(base + op);
+    }
+  };
+
+  const clearAll = () => {
+    setExpression("");
+    setHistory("");
+    setDone(false);
+  };
+
+  const deleteLast = () => {
+    if (done) return clearAll();
+    setExpression(expression.slice(0, -1));
+  };
+
+  const calculate = () => {
+    if (done || expression === "") return;
+    const clean = isOperator(expression.slice(-1)) ? expression.slice(0, -1) : expression;
+    if (clean === "" || clean === "-") return;
+    try {
+      const result = evaluate(clean);
+      setHistory(clean);
+      setExpression(String(result));
+    } catch (err) {
+      setHistory("");
+      setExpression(err.message); // hiển thị "Chia cho 0" / "Biểu thức sai"
+    }
+    setDone(true);
+  };
+
+  const num = (d) => (
+    <Button key={d} label={d} {...THEME.number} onClick={() => inputDigit(d)} />
+  );
+  const op = (label, value) => (
+    <Button label={label} {...THEME.operator} onClick={() => inputOperator(value)} />
+  );
+
+  return (
+    <>
+      <style>{css}</style>
+      <div className="page">
+        <div className="calculator">
+          <Display value={expression} history={history} />
+          <div className="keys">
+            <Button label="C" {...THEME.action} onClick={clearAll} />
+            <Button label="DEL" {...THEME.action} onClick={deleteLast} />
+            {op("÷", "/")}
+            {op("×", "*")}
+
+            {num("7")}{num("8")}{num("9")}{op("−", "-")}
+            {num("4")}{num("5")}{num("6")}{op("+", "+")}
+            {num("1")}{num("2")}{num("3")}
+            <Button label="=" {...THEME.equals} tall onClick={calculate} />
+
+            <Button label="0" {...THEME.number} span={2} onClick={() => inputDigit("0")} />
+            {num(".")}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
